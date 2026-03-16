@@ -11,7 +11,11 @@ This is a full-stack CRUD application built with React, Redux, and Node.js.
   - Has a store with actions and reducers for cart and todos.
 
 - **server/**: Contains the backend Node.js application.
-  - (Details to be added as the server code is developed.)
+  - Built with Express.js using ES6 modules.
+  - Provides RESTful API for todos (CRUD operations).
+  - Uses mock data for now (no database).
+  - Includes middleware for error handling.
+  - Folder structure: controllers, routes, middleware, utils, config.
 
 ## Getting Started
 
@@ -30,11 +34,23 @@ This is a full-stack CRUD application built with React, Redux, and Node.js.
 
 ### Running the Server
 1. Go to the server directory: `cd server`
-2. (Instructions to be added once server code is implemented.)
+2. Install dependencies: `npm install`
+3. Start the development server: `npm run dev` (uses --watch for auto-restart)
+4. The server runs on `http://localhost:5001`
+5. API endpoints: `/api/todos` (GET, POST, PUT, DELETE)
 
-## Contributing
-Feel free to contribute by submitting pull requests or opening issues.
+### API Documentation
+- **GET /api/todos**: Get all todos
+- **GET /api/todos/:id**: Get a specific todo by ID
+- **POST /api/todos**: Create a new todo (requires `title` in body)
+- **PUT /api/todos/:id**: Update a todo by ID
+- **DELETE /api/todos/:id**: Delete a todo by ID
 
-## License
-This project is licensed under the MIT License.</content>
-<parameter name="filePath">d:\Projects Git\react-redux-node-crud\README.md
+Example request:
+```json
+POST /api/todos
+{
+  "title": "New Todo",
+  "completed": false
+}
+```

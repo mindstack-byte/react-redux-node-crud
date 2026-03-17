@@ -1,57 +1,51 @@
-import { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { nanoid } from '@reduxjs/toolkit'
+import { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
 import {
-  addTodo,
-  toggleTodo,
-  updateTodo,
-  removeTodo,
-  clearCompleted,
-} from '../store/actions/todoActions.js'
+  fetchTodos
+} from '../store/reducers/todosSlice.js'
+import { useTodos } from '../hooks/useTodos.js';
 
+// Main Todos component for managing todo items
 function Todos() {
-  const [text, setText] = useState('')
-  const [editingId, setEditingId] = useState(null)
-  const [editingText, setEditingText] = useState('')
+  // Redux hooks
+  const dispatch = useDispatch()  // To dispatch actions
 
-  const todos = useSelector((state) => state.todos.items)
-  const dispatch = useDispatch()
+  // Fetch todos on component mount
+  useEffect(() => {
+    dispatch(fetchTodos())
+  }, [dispatch])
 
-  const handleSubmit = (event) => {
-    event.preventDefault()
-    const trimmed = text.trim()
-    if (!trimmed) return
-    dispatch(addTodo({
-      id: nanoid(),
-      text: trimmed,
-      completed: false
-    }))
-    setText('')
-  }
+  const { text,
+    setText,
+    editingId,
+    setEditingId,
+    editingText,
+    setEditingText,
+    todos,
+    loading,
+    error,
+    // Computed values
+    activeCount,
+    // Handler functions
+    handleSubmit,
+    handleUpdate,
+    handleToggle,
+    handleDelete,
+    startEdit
+  } = useTodos()  // Custom hook for managing todos logic
 
-  const startEdit = (todo) => {
-    setEditingId(todo.id)
-    setEditingText(todo.text)
-  }
 
-  const handleUpdate = (event) => {
-    event.preventDefault()
-    const trimmed = editingText.trim()
-    if (!trimmed || !editingId) return
-    dispatch(updateTodo({ id: editingId, text: trimmed }))
-    setEditingId(null)
-    setEditingText('')
-  }
-
-  const activeCount = todos.filter((todo) => !todo.completed).length
-
+  // Render the component
   return (
+    // Main container for the todos section
     <section className="todos-section">
       <div className="todos-card">
+        {/* Header with title */}
         <header className="todos-header">
           <h1 className="todos-title">Todo list</h1>
         </header>
 
+        {/* Form to add new todos */}
         <form className="todos-form" onSubmit={handleSubmit}>
           <input
             className="todos-input"
@@ -65,31 +59,34 @@ function Todos() {
           </button>
         </form>
 
+        {/* Loading and error messages */}
+        {loading && <p>Loading todos...</p>}
+        {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+
+        {/* Toolbar showing active todo count */}
         {todos.length > 0 && (
           <div className="todos-toolbar">
             <span className="todos-count">
               {activeCount} task{activeCount === 1 ? '' : 's'} left
             </span>
-            <button
-              type="button"
-              className="todos-clear-btn"
-              onClick={() => dispatch(clearCompleted())}
-            >
-              Clear completed
-            </button>
           </div>
         )}
 
+        {/* List of todos */}
         <ul className="todos-list">
           {todos.map((todo) => (
+            // Individual todo item
             <li key={todo.id} className="todos-item">
               <label className="todos-main">
+                {/* Checkbox to toggle completion */}
                 <input
                   type="checkbox"
                   checked={todo.completed}
-                  onChange={() => dispatch(toggleTodo(todo.id))}
+                  onChange={() => handleToggle(todo.id, todo.completed)}
                 />
+                {/* Conditional rendering: edit form or display text */}
                 {editingId === todo.id ? (
+                  // Edit form when editing
                   <form className="todos-edit-form" onSubmit={handleUpdate}>
                     <input
                       className="todos-edit-input"
@@ -100,18 +97,20 @@ function Todos() {
                     />
                   </form>
                 ) : (
+                  // Display text when not editing
                   <span
-                    className={`todos-text ${
-                      todo.completed ? 'todos-text-completed' : ''
-                    }`}
+                    className={`todos-text ${todo.completed ? 'todos-text-completed' : ''
+                      }`}
                   >
-                    {todo.text}
+                    {todo.title}
                   </span>
                 )}
               </label>
 
+              {/* Action buttons for each todo */}
               <div className="todos-actions">
                 {editingId === todo.id ? (
+                  // Save button when editing
                   <button
                     type="button"
                     className="todos-btn"
@@ -120,6 +119,7 @@ function Todos() {
                     Save
                   </button>
                 ) : (
+                  // Edit button when not editing
                   <button
                     type="button"
                     className="todos-btn"
@@ -129,10 +129,12 @@ function Todos() {
                   </button>
                 )}
 
+                {/* Delete button */}
+                {/* Delete button */}
                 <button
                   type="button"
                   className="todos-btn todos-btn-danger"
-                  onClick={() => dispatch(removeTodo(todo.id))}
+                  onClick={() => handleDelete(todo.id)}
                 >
                   Delete
                 </button>

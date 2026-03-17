@@ -1,8 +1,8 @@
 export {
-  addTodo,
-  toggleTodo,
-  updateTodo,
-  removeTodo,
-  clearCompleted,
+  fetchTodos,
+  addTodoAsync,
+  updateTodoAsync,
+  deleteTodoAsync,
+  clearError,
 } from '../reducers/todosSlice.js'
 

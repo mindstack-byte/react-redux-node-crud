@@ -54,3 +54,5 @@ POST /api/todos
   "completed": false
 }
 ```
+
+<img width="1581" height="773" alt="image" src="https://github.com/user-attachments/assets/5e1a8edd-e934-48d6-8d91-6c6850805314" />
